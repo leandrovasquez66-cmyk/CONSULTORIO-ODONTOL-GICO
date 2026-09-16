@@ -9,6 +9,8 @@
 # Conceptos aplicados: Variables, Condicionales, Ciclos, Excepciones y Colecciones
 # ==============================================================================
 
+import datetime  # Módulo para manejar y comparar fechas reales del sistema
+
 # ESTRUCTURA DE DATOS / ARREGLO EN MEMORIA: 
 # Lista global para almacenar la información de los clientes registrados.
 lista_clientes = []
@@ -67,17 +69,29 @@ def capturar_cliente():
     """
     print("\n--- REGISTRO DE NUEVO CLIENTE ---")
     
-    # VALIDACIÓN: Cédula no vacía
+    # VALIDACIÓN DE REBOTE: Cédula (Solo dígitos numéricos)
     while True:
         cedula = input("Cédula: ").strip()
-        if cedula:
+        if cedula.isdigit():
             break
-        print("Error: La cédula no puede estar vacía.")
+        print("Opción inválida. La cédula debe contener únicamente números.")
 
-    nombre = input("Nombre completo: ").strip()
-    telefono = input("Teléfono: ").strip()
+    # VALIDACIÓN DE REBOTE: Nombre Completo (Solo letras y espacios)
+    while True:
+        nombre = input("Nombre completo: ").strip()
+        # Permite letras (incluyendo tildes/ñ) y espacios, pero no vacío
+        if nombre and all(c.isalpha() or c.isspace() for c in nombre):
+            break
+        print("Opción inválida. El nombre debe contener únicamente letras.")
+
+    # VALIDACIÓN DE REBOTE: Teléfono (Solo dígitos numéricos)
+    while True:
+        telefono = input("Teléfono: ").strip()
+        if telefono.isdigit():
+            break
+        print("Opción inválida. El teléfono debe contener únicamente números.")
     
-    # VALIDACIÓN DE REBOTE: Tipo de Cliente
+    # VALIDACIÓN DE REBOTE: Tipo de Cliente (1-3)
     mapa_cliente = {"1": "particular", "2": "eps", "3": "prepagada"}
     while True:
         print("\nTipo de Cliente: 1. Particular | 2. EPS | 3. Prepagada")
@@ -85,9 +99,9 @@ def capturar_cliente():
         if opcion_cliente in mapa_cliente:
             tipo_cliente = mapa_cliente[opcion_cliente]
             break
-        print("Error: Opción inválida. Seleccione un número entre 1 y 3.")
+        print("Opción inválida. Seleccione un número de 1 a 3.")
     
-    # VALIDACIÓN DE REBOTE: Tipo de Atención
+    # VALIDACIÓN DE REBOTE: Tipo de Atención (1-4)
     mapa_atencion = {"1": "limpieza", "2": "calzas", "3": "extraccion", "4": "diagnostico"}
     while True:
         print("\nTipo de Atención: 1. Limpieza | 2. Calzas | 3. Extracción | 4. Diagnóstico")
@@ -95,7 +109,7 @@ def capturar_cliente():
         if opcion_atencion in mapa_atencion:
             tipo_atencion = mapa_atencion[opcion_atencion]
             break
-        print("Error: Opción inválida. Seleccione un número entre 1 y 4.")
+        print("Opción inválida. Seleccione un número de 1 a 4.")
     
     # REGLA DE NEGOCIO Y MANEJO DE ERRORES (CICLO WHILE + TRY / EXCEPT)
     if tipo_atencion in ["limpieza", "diagnostico"]:
@@ -109,21 +123,34 @@ def capturar_cliente():
                 cantidad = int(input("Cantidad de procedimientos (mayor a 0): "))
                 if cantidad > 0:
                     break  # Sale del ciclo si el dato cumple la condición
-                print("Error: La cantidad debe ser un número entero mayor a 0.")
+                print("Opción inválida. La cantidad debe ser un número entero mayor a 0.")
             except ValueError:
                 # Se activa si el usuario escribe letras o caracteres especiales
-                print("Error: Ingrese un número entero válido.")
+                print("Opción inválida. Ingrese un número entero válido.")
                 
-    # VALIDACIÓN DE REBOTE: Prioridad de Atención
+    # VALIDACIÓN DE REBOTE: Prioridad de Atención (1-2)
     while True:
         print("\nPrioridad: 1. Normal | 2. Urgente")
         opcion_prioridad = input("Seleccione opción (1-2): ").strip()
         if opcion_prioridad in ["1", "2"]:
             prioridad = "Urgente" if opcion_prioridad == "2" else "Normal"
             break
-        print("Error: Opción inválida. Seleccione 1 o 2.")
+        print("Opción inválida. Seleccione un número de 1 a 2.")
     
-    fecha = input("Fecha de la Cita (DD/MM/AAAA): ").strip()
+    # VALIDACIÓN DE REBOTE: Fecha de la Cita (Hoy en adelante)
+    fecha_hoy = datetime.date.today()
+    while True:
+        fecha_str = input("\nFecha de la Cita (DD/MM/AAAA): ").strip()
+        try:
+            # Convierte el texto ingresado a un objeto de tipo fecha
+            fecha_dt = datetime.datetime.strptime(fecha_str, "%d/%m/%Y").date()
+            if fecha_dt >= fecha_hoy:
+                fecha = fecha_str
+                break
+            else:
+                print(f"Opción inválida. La fecha debe ser igual o posterior al día de hoy ({fecha_hoy.strftime('%d/%m/%Y')}).")
+        except ValueError:
+            print("Opción inválida. Formato incorrecto. Utilice el formato DD/MM/AAAA (Ejemplo: 25/11/2026).")
     
     # CÁLCULOS MATEMÁTICOS DE TARIFA Y TOTALES
     valor_cita, valor_atencion = calcular_precios(tipo_cliente, tipo_atencion)
