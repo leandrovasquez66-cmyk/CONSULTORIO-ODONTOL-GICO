@@ -63,31 +63,44 @@ def capturar_cliente():
     """
     Función para registrar un nuevo cliente con validaciones.
     APLICA: Lectura de datos por consola, diccionarios, validación de reglas de negocio
-    y manejo de excepciones para evitar fallos por datos inválidos.
+    y manejo de excepciones/bucles de rebote para evitar datos inválidos.
     """
     print("\n--- REGISTRO DE NUEVO CLIENTE ---")
     
-    # CAPTURA DE VARIABLES TIPO TEXTO (Strings)
-    cedula = input("Cédula: ").strip()
+    # VALIDACIÓN: Cédula no vacía
+    while True:
+        cedula = input("Cédula: ").strip()
+        if cedula:
+            break
+        print("Error: La cédula no puede estar vacía.")
+
     nombre = input("Nombre completo: ").strip()
     telefono = input("Teléfono: ").strip()
     
-    # Selección de Tipo de Cliente (Uso de Diccionarios como Mapa de Opciones)
-    print("\nTipo de Cliente: 1. Particular | 2. EPS | 3. Prepagada")
-    opcion_cliente = input("Seleccione una opción (1-3): ").strip()
+    # VALIDACIÓN DE REBOTE: Tipo de Cliente
     mapa_cliente = {"1": "particular", "2": "eps", "3": "prepagada"}
-    tipo_cliente = mapa_cliente.get(opcion_cliente, "particular")
+    while True:
+        print("\nTipo de Cliente: 1. Particular | 2. EPS | 3. Prepagada")
+        opcion_cliente = input("Seleccione una opción (1-3): ").strip()
+        if opcion_cliente in mapa_cliente:
+            tipo_cliente = mapa_cliente[opcion_cliente]
+            break
+        print("Error: Opción inválida. Seleccione un número entre 1 y 3.")
     
-    # Selección de Tipo de Atención
-    print("\nTipo de Atención: 1. Limpieza | 2. Calzas | 3. Extracción | 4. Diagnóstico")
-    opcion_atencion = input("Seleccione una opción (1-4): ").strip()
+    # VALIDACIÓN DE REBOTE: Tipo de Atención
     mapa_atencion = {"1": "limpieza", "2": "calzas", "3": "extraccion", "4": "diagnostico"}
-    tipo_atencion = mapa_atencion.get(opcion_atencion, "diagnostico")
+    while True:
+        print("\nTipo de Atención: 1. Limpieza | 2. Calzas | 3. Extracción | 4. Diagnóstico")
+        opcion_atencion = input("Seleccione una opción (1-4): ").strip()
+        if opcion_atencion in mapa_atencion:
+            tipo_atencion = mapa_atencion[opcion_atencion]
+            break
+        print("Error: Opción inválida. Seleccione un número entre 1 y 4.")
     
     # REGLA DE NEGOCIO Y MANEJO DE ERRORES (CICLO WHILE + TRY / EXCEPT)
     if tipo_atencion in ["limpieza", "diagnostico"]:
         cantidad = 1
-        print(f"La cantidad para {tipo_atencion} es fija: 1")
+        print(f"\nLa cantidad para {tipo_atencion} es fija: 1")
     else:
         # CICLO REPETITIVO para validar la cantidad ingresada
         while True:
@@ -101,10 +114,14 @@ def capturar_cliente():
                 # Se activa si el usuario escribe letras o caracteres especiales
                 print("Error: Ingrese un número entero válido.")
                 
-    # Prioridad de Atención (Operador ternario / Condicional simple)
-    print("\nPrioridad: 1. Normal | 2. Urgente")
-    opcion_prioridad = input("Seleccione opción (1-2): ").strip()
-    prioridad = "Urgente" if opcion_prioridad == "2" else "Normal"
+    # VALIDACIÓN DE REBOTE: Prioridad de Atención
+    while True:
+        print("\nPrioridad: 1. Normal | 2. Urgente")
+        opcion_prioridad = input("Seleccione opción (1-2): ").strip()
+        if opcion_prioridad in ["1", "2"]:
+            prioridad = "Urgente" if opcion_prioridad == "2" else "Normal"
+            break
+        print("Error: Opción inválida. Seleccione 1 o 2.")
     
     fecha = input("Fecha de la Cita (DD/MM/AAAA): ").strip()
     
@@ -168,7 +185,7 @@ def ordenar_y_mostrar():
     lista_ordenada = sorted(lista_clientes, key=lambda x: x["total_atencion"], reverse=True)
     
     print("\n=========================================================================================")
-    print("        LISTA DE CLIENTES ORDENADA POR VALOR DE ATENCIÓN (MAYO A MENOR)")
+    print("        LISTA DE CLIENTES ORDENADA POR VALOR DE ATENCIÓN (MAYOR A MENOR)")
     print("=========================================================================================")
     print(f"{'Cédula':<12} | {'Nombre':<20} | {'Atención':<12} | {'Cant.':<5} | {'Valor Atención Total':<20} | {'Total Pagar':<12}")
     print("-" * 90)
@@ -215,7 +232,7 @@ def buscar_cliente_por_cedula():
 
 # ==============================================================================
 # MENÚ PRINCIPAL: CONTROL DE FLUJO DEL PROGRAMA
-# APLICA: CICLO REPETITIVO INFINITO (while True) Y ESTRUCTURA CONDICIONAL MULTIPLE
+# APLICA: CICLO REPETITIVO INFINITO (while True) Y ESTRUCTURA CONDICIONAL MÚLTIPLE
 # ==============================================================================
 def menu_principal():
     while True:
